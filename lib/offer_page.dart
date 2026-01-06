@@ -18,7 +18,6 @@ class _OfferPageState extends State<OfferPage> {
     'assets/carousel4.jpg',
   ];
 
-  // Fonction callback pour changer la page
   void callbackFunction(int index, CarouselPageChangedReason reason) {
     setState(() {
       _current = index;
@@ -32,7 +31,7 @@ class _OfferPageState extends State<OfferPage> {
         CarouselSlider(
           key: ValueKey(_current),
           options: CarouselOptions(
-            height: 400,
+            height: 200,
             aspectRatio: 16 / 9,
             viewportFraction: 0.85,
             initialPage: _current,
