@@ -48,7 +48,7 @@ class _ManageSallesPageState extends State<ManageSallesPage>
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.purple, Colors.purpleAccent],
+              colors: [Colors.orange, Colors.purpleAccent],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -80,7 +80,7 @@ class _ManageSallesPageState extends State<ManageSallesPage>
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.orange,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -153,6 +153,7 @@ class _ManageSallesPageState extends State<ManageSallesPage>
                       var data = doc.data() as Map<String, dynamic>;
 
                       String ville = data['ville'] ?? 'Non définie';
+                      String roomName = data['roomName'] ?? 'Nom non définie';
                       String price = data['price'] ?? 'Prix non défini';
                       String surface = data['surface'] ?? 'Surface non définie';
                       String description =
@@ -206,6 +207,7 @@ class _ManageSallesPageState extends State<ManageSallesPage>
                                               color: Colors.purple,
                                             ),
                                             const SizedBox(width: 4),
+
                                             Text(
                                               ville,
                                               style: const TextStyle(
@@ -218,11 +220,16 @@ class _ManageSallesPageState extends State<ManageSallesPage>
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          price,
+                                          roomName,
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14,
                                           ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          price,
+                                          style: const TextStyle(fontSize: 14),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
@@ -319,17 +326,36 @@ class _ManageSallesPageState extends State<ManageSallesPage>
   ) async {
     final formKey = GlobalKey<FormState>();
     String ville = data['ville'] ?? '';
+    String roomName = data['roomName'] ?? '';
     String price = data['price'] ?? '';
     String surface = data['surface'] ?? '';
     String description = data['description'] ?? '';
 
     final List<String> villes = [
-      "Sousse",
-      "Monastir",
+      "Ariana",
+      "Béja",
+      "Ben Arous",
+      "Bizerte",
+      "Gabès",
+      "Gafsa",
+      "Jendouba",
+      "Kairouan",
+      "Kasserine",
+      "Kébili",
+      "Kef",
       "Mahdia",
-      "Tunis",
-      "Sfax",
+      "Manouba",
+      "Médenine",
+      "Monastir",
       "Nabeul",
+      "Sfax",
+      "Sidi Bouzid",
+      "Siliana",
+      "Sousse",
+      "Tataouine",
+      "Tozeur",
+      "Tunis",
+      "Zaghouan",
     ];
 
     await showDialog(
@@ -357,6 +383,15 @@ class _ManageSallesPageState extends State<ManageSallesPage>
                               )
                               .toList(),
                       onChanged: (value) => ville = value!,
+                    ),
+                    const SizedBox(height: 6),
+                    TextFormField(
+                      initialValue: roomName,
+                      decoration: const InputDecoration(
+                        labelText: "Nom de salle",
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (value) => roomName = value,
                     ),
                     const SizedBox(height: 6),
                     TextFormField(
@@ -402,6 +437,7 @@ class _ManageSallesPageState extends State<ManageSallesPage>
                       .doc(docId)
                       .update({
                         'ville': ville,
+                        'roomName': roomName,
                         'price': price,
                         'surface': surface,
                         'description': description,
@@ -417,7 +453,10 @@ class _ManageSallesPageState extends State<ManageSallesPage>
                     );
                   }
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.purple),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.purple,
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text("Enregistrer"),
               ),
             ],

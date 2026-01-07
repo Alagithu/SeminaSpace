@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'reservationPage.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,54 +12,36 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String selectedCity = "All";
 
-  final List<Map<String, String>> _seminars = const [
-    {
-      "price": "1500dt / jour",
-      "surface": "300 m²",
-      "imagePath": "assets/semina1.jpg",
-      "description":
-          "Situé à Sousse, salle moderne idéale pour conférences et séminaires.",
-      "city": "Sousse",
-    },
-    {
-      "price": "1200dt / jour",
-      "surface": "250 m²",
-      "imagePath": "assets/semina2.jpg",
-      "description":
-          "Situé à Monastir, espace équipé pour réunions professionnelles.",
-      "city": "Monastir",
-    },
-    {
-      "price": "1800dt / jour",
-      "surface": "400 m²",
-      "imagePath": "assets/semina3.jpg",
-      "description": "Situé à Mahdia, grande salle premium pour événements.",
-      "city": "Mahdia",
-    },
-    {
-      "price": "800dt / jour",
-      "surface": "200 m²",
-      "imagePath": "assets/semina4.jpg",
-      "description": "Situé à Tunis, salle accessible et économique.",
-      "city": "Tunis",
-    },
-  ];
-
   final List<String> _cities = const [
-    "Sousse",
-    "Monastir",
-    "Mahdia",
-    "Tunis",
     "All",
+    "Ariana",
+    "Béja",
+    "Ben Arous",
+    "Bizerte",
+    "Gabès",
+    "Gafsa",
+    "Jendouba",
+    "Kairouan",
+    "Kasserine",
+    "Kébili",
+    "Kef",
+    "Mahdia",
+    "Manouba",
+    "Médenine",
+    "Monastir",
+    "Nabeul",
+    "Sfax",
+    "Sidi Bouzid",
+    "Siliana",
+    "Sousse",
+    "Tataouine",
+    "Tozeur",
+    "Tunis",
+    "Zaghouan",
   ];
 
   @override
   Widget build(BuildContext context) {
-    final filteredSeminars =
-        _seminars.where((seminar) {
-          return selectedCity == "All" || seminar["city"] == selectedCity;
-        }).toList();
-
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: SafeArea(
@@ -68,7 +51,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.purple, Colors.purpleAccent],
+                  colors: [Colors.orange, Colors.purpleAccent],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -93,51 +76,112 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            SizedBox(
-              height: 50,
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                scrollDirection: Axis.horizontal,
-                itemCount: _cities.length,
-                itemBuilder: (context, index) {
-                  final city = _cities[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(city),
-                      selected: selectedCity == city,
-                      selectedColor: Colors.purple,
-                      backgroundColor: Colors.purple.shade200,
-                      labelStyle: TextStyle(
-                        color:
-                            selectedCity == city ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  const Icon(Icons.location_city, color: Colors.purple),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: selectedCity,
+                      decoration: InputDecoration(
+                        labelText: "Filtrer par ville",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
                       ),
-                      onSelected: (_) {
-                        setState(() {
-                          selectedCity = city;
-                        });
+                      items:
+                          _cities
+                              .map(
+                                (city) => DropdownMenuItem(
+                                  value: city,
+                                  child: Text(city),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            selectedCity = value;
+                          });
+                        }
                       },
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
             ),
 
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                itemCount: filteredSeminars.length,
-                itemBuilder: (context, index) {
-                  final seminar = filteredSeminars[index];
-                  return SeminarCard(
-                    price: seminar["price"]!,
-                    surface: seminar["surface"]!,
-                    imagePath: seminar["imagePath"]!,
-                    description: seminar["description"]!,
+              child: StreamBuilder<QuerySnapshot>(
+                stream:
+                    FirebaseFirestore.instance
+                        .collection('salles')
+                        .orderBy('createdAt', descending: true)
+                        .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(color: Colors.purple),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        "Erreur : ${snapshot.error}",
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    );
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.meeting_room_outlined,
+                            size: 64,
+                            color: Colors.purple.shade300,
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            "Aucune salle à afficher",
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  final filtered =
+                      snapshot.data!.docs.where((doc) {
+                        if (selectedCity == "All") return true;
+                        final data = doc.data() as Map<String, dynamic>;
+                        return data['ville'] == selectedCity;
+                      }).toList();
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: filtered.length,
+                    itemBuilder: (context, index) {
+                      final data =
+                          filtered[index].data() as Map<String, dynamic>;
+
+                      return SeminarCard(
+                        name: data['roomName'] ?? "Nom non défini",
+                        price: data['price'] ?? "Prix non défini",
+                        surface: data['surface'] ?? "Surface non définie",
+                        imagePath: data['imageUrl'] ?? "",
+                        description: data['description'] ?? "",
+                      );
+                    },
                   );
                 },
               ),
@@ -150,6 +194,7 @@ class _HomePageState extends State<HomePage> {
 }
 
 class SeminarCard extends StatelessWidget {
+  final String name;
   final String price;
   final String surface;
   final String imagePath;
@@ -157,6 +202,7 @@ class SeminarCard extends StatelessWidget {
 
   const SeminarCard({
     super.key,
+    required this.name,
     required this.price,
     required this.surface,
     required this.imagePath,
@@ -175,20 +221,34 @@ class SeminarCard extends StatelessWidget {
             borderRadius: const BorderRadius.horizontal(
               left: Radius.circular(16),
             ),
-            child: Image.asset(
-              imagePath,
-              width: 120,
-              height: 140,
-              fit: BoxFit.cover,
-            ),
+            child:
+                imagePath.isNotEmpty
+                    ? Image.network(
+                      imagePath,
+                      width: 120,
+                      height: 140,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return _placeholderImage();
+                      },
+                    )
+                    : _placeholderImage(),
           ),
-
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
                   Text(
                     price,
                     style: const TextStyle(
@@ -206,7 +266,6 @@ class SeminarCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 10),
-
                   Align(
                     alignment: Alignment.centerRight,
                     child: ElevatedButton(
@@ -235,6 +294,19 @@ class SeminarCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _placeholderImage() {
+    return Container(
+      width: 120,
+      height: 140,
+      color: Colors.grey.shade300,
+      child: const Icon(
+        Icons.image_not_supported,
+        size: 40,
+        color: Colors.grey,
       ),
     );
   }

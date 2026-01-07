@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/login.dart';
 import 'package:intl/intl.dart';
 import 'manageSalle.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -48,7 +50,7 @@ class _AdminPageState extends State<AdminPage>
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.purple, Colors.purpleAccent],
+              colors: [Colors.orange, Colors.purpleAccent],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -57,8 +59,8 @@ class _AdminPageState extends State<AdminPage>
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => Navigator.pop(context),
             tooltip: "Déconnexion",
+            onPressed: () => _showLogoutDialog(context),
           ),
         ],
       ),
@@ -129,6 +131,7 @@ class _AdminPageState extends State<AdminPage>
                       var data = doc.data() as Map<String, dynamic>;
 
                       String name = data['name'] ?? 'Inconnu';
+                      String roomName = data['roomName'] ?? 'Salle non définie';
                       String email = data['email'] ?? 'Pas d\'email';
                       String phone = data['phone'] ?? 'Pas de téléphone';
                       int participants = data['participants'] ?? 0;
@@ -157,7 +160,20 @@ class _AdminPageState extends State<AdminPage>
                             name,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text("$dateStr | $startTime - $endTime"),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                roomName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.purple,
+                                ),
+                              ),
+                              Text("$dateStr | $startTime - $endTime"),
+                            ],
+                          ),
+
                           trailing: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
@@ -191,6 +207,12 @@ class _AdminPageState extends State<AdminPage>
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  _buildInfoRow(
+                                    Icons.meeting_room,
+                                    "Salle",
+                                    roomName,
+                                  ),
+                                  const SizedBox(height: 8),
                                   _buildInfoRow(Icons.email, "Email", email),
                                   const SizedBox(height: 8),
                                   _buildInfoRow(
@@ -291,7 +313,7 @@ class _AdminPageState extends State<AdminPage>
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.orange,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -342,6 +364,35 @@ class _AdminPageState extends State<AdminPage>
         Expanded(child: Text(value, style: const TextStyle(fontSize: 14))),
       ],
     );
+  }
+
+  Future<void> _showLogoutDialog(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Déconnexion"),
+            content: const Text("Voulez-vous vraiment vous déconnecter ?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Annuler"),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.purple,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text("Déconnexion"),
+              ),
+            ],
+          ),
+    );
+
+    if (confirm == true) {
+      await _logout(context);
+    }
   }
 
   Future<void> _confirmDelete(
@@ -424,6 +475,17 @@ class _AdminPageState extends State<AdminPage>
           ),
         );
       }
+    }
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+
+    if (context.mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => Login()),
+        (route) => false,
+      );
     }
   }
 

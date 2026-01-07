@@ -21,20 +21,38 @@ class _AddSallePageState extends State<AddSallePage> {
   String? price;
   String? surface;
   String? description;
-
+  String? roomName;
   Uint8List? _imageData;
   String? _imageName;
 
   bool _isSaving = false;
   double _uploadProgress = 0;
 
-  final List<String> _villes = [
-    "Sousse",
-    "Monastir",
+  final List<String> villes = [
+    "Ariana",
+    "Béja",
+    "Ben Arous",
+    "Bizerte",
+    "Gabès",
+    "Gafsa",
+    "Jendouba",
+    "Kairouan",
+    "Kasserine",
+    "Kébili",
+    "Kef",
     "Mahdia",
-    "Tunis",
-    "Sfax",
+    "Manouba",
+    "Médenine",
+    "Monastir",
     "Nabeul",
+    "Sfax",
+    "Sidi Bouzid",
+    "Siliana",
+    "Sousse",
+    "Tataouine",
+    "Tozeur",
+    "Tunis",
+    "Zaghouan",
   ];
 
   Future<void> _pickImage() async {
@@ -90,6 +108,7 @@ class _AddSallePageState extends State<AddSallePage> {
         _imageData = null;
         _imageName = null;
         ville = null;
+        roomName = null;
         price = null;
         surface = null;
         description = null;
@@ -106,6 +125,7 @@ class _AddSallePageState extends State<AddSallePage> {
     try {
       final docRef = await FirebaseFirestore.instance.collection('salles').add({
         'ville': ville,
+        'roomName': roomName,
         'price': price,
         'surface': surface,
         'description': description,
@@ -138,7 +158,7 @@ class _AddSallePageState extends State<AddSallePage> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.purple, Colors.purpleAccent],
+              colors: [Colors.orange, Colors.purpleAccent],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -156,7 +176,7 @@ class _AddSallePageState extends State<AddSallePage> {
               GestureDetector(
                 onTap: _pickImage,
                 child: Container(
-                  height: 120,
+                  height: 100,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(16),
@@ -194,13 +214,13 @@ class _AddSallePageState extends State<AddSallePage> {
                           ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               if (_isSaving)
                 LinearProgressIndicator(
                   value: _uploadProgress,
                   color: Colors.purple,
                 ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: ville,
                 decoration: const InputDecoration(
@@ -209,13 +229,24 @@ class _AddSallePageState extends State<AddSallePage> {
                   prefixIcon: Icon(Icons.location_city, color: Colors.purple),
                 ),
                 items:
-                    _villes
+                    villes
                         .map((v) => DropdownMenuItem(value: v, child: Text(v)))
                         .toList(),
                 onChanged: (v) => setState(() => ville = v),
                 validator: (v) => v == null ? "Champ obligatoire" : null,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: "Nom de salle",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.meeting_room, color: Colors.purple),
+                ),
+                validator:
+                    (v) => v == null || v.isEmpty ? "Champ obligatoire" : null,
+                onSaved: (v) => roomName = v,
+              ),
+              const SizedBox(height: 12),
               TextFormField(
                 decoration: const InputDecoration(
                   labelText: "Prix (ex: 1500dt par jour)",
@@ -226,7 +257,7 @@ class _AddSallePageState extends State<AddSallePage> {
                     (v) => v == null || v.isEmpty ? "Champ obligatoire" : null,
                 onSaved: (v) => price = v,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               TextFormField(
                 decoration: const InputDecoration(
                   labelText: "Surface (ex: 300 m²)",
@@ -237,7 +268,7 @@ class _AddSallePageState extends State<AddSallePage> {
                     (v) => v == null || v.isEmpty ? "Champ obligatoire" : null,
                 onSaved: (v) => surface = v,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               TextFormField(
                 decoration: const InputDecoration(
                   labelText: "Description",
@@ -249,13 +280,13 @@ class _AddSallePageState extends State<AddSallePage> {
                     (v) => v == null || v.isEmpty ? "Champ obligatoire" : null,
                 onSaved: (v) => description = v,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
               SizedBox(
-                height: 50,
+                height: 40,
                 child: ElevatedButton(
                   onPressed: _isSaving ? null : _saveSalle,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.orange,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -264,7 +295,7 @@ class _AddSallePageState extends State<AddSallePage> {
                   child:
                       _isSaving
                           ? const SizedBox(
-                            height: 24,
+                            height: 18,
                             width: 24,
                             child: CircularProgressIndicator(
                               color: Colors.white,

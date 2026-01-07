@@ -71,12 +71,7 @@ class Login extends StatelessWidget {
           margin: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _header(),
-              _inputField(context),
-              _forgetPassword(),
-              _signUp(context),
-            ],
+            children: [_header(), _inputField(context), _signUp(context)],
           ),
         ),
       ),
@@ -87,10 +82,9 @@ class Login extends StatelessWidget {
     return const Column(
       children: [
         Text(
-          "Welcome Back",
+          "Welcome To SeminaSpace",
           style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
         ),
-        Text("Enter your credentials to login!"),
       ],
     );
   }
@@ -131,7 +125,7 @@ class Login extends StatelessWidget {
         ElevatedButton(
           onPressed: () => signIn(context),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.purple,
+            backgroundColor: Colors.orange,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: const StadiumBorder(),
           ),
@@ -141,16 +135,6 @@ class Login extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _forgetPassword() {
-    return TextButton(
-      onPressed: () {},
-      child: const Text(
-        "Forget password",
-        style: TextStyle(color: Colors.purple),
-      ),
     );
   }
 
@@ -166,7 +150,10 @@ class Login extends StatelessWidget {
               MaterialPageRoute(builder: (context) => const SignUp()),
             );
           },
-          child: const Text("Sign Up", style: TextStyle(color: Colors.purple)),
+          child: const Text(
+            "Sign Up",
+            style: TextStyle(color: Colors.deepPurple),
+          ),
         ),
       ],
     );

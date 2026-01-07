@@ -18,8 +18,8 @@ class _ReservationPageState extends State<ReservationPage> {
   TimeOfDay? startTime;
   TimeOfDay? endTime;
   int? participants;
+  String? roomName;
 
-  // ================= DATE =================
   Future<void> _pickDate(BuildContext context) async {
     final date = await showDatePicker(
       context: context,
@@ -32,7 +32,6 @@ class _ReservationPageState extends State<ReservationPage> {
     }
   }
 
-  // ================= TIME =================
   Future<void> _pickTime(BuildContext context, bool isStart) async {
     final time = await showTimePicker(
       context: context,
@@ -45,10 +44,10 @@ class _ReservationPageState extends State<ReservationPage> {
     }
   }
 
-  // ================= FIREBASE =================
   Future<void> _saveReservationToFirebase() async {
     await FirebaseFirestore.instance.collection('reservations').add({
       'name': name,
+      'roomName': roomName,
       'email': email,
       'phone': phone,
       'date': Timestamp.fromDate(selectedDate!),
@@ -59,7 +58,6 @@ class _ReservationPageState extends State<ReservationPage> {
     });
   }
 
-  // ================= SUBMIT =================
   void _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -103,7 +101,7 @@ class _ReservationPageState extends State<ReservationPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Réserver une Salle"),
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.orange,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -120,7 +118,17 @@ class _ReservationPageState extends State<ReservationPage> {
                 validator: (v) => v!.isEmpty ? "Champ obligatoire" : null,
                 onSaved: (v) => name = v,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: "Nom de la salle",
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.meeting_room),
+                ),
+                validator: (v) => v!.isEmpty ? "Champ obligatoire" : null,
+                onSaved: (v) => roomName = v,
+              ),
+              const SizedBox(height: 12),
 
               TextFormField(
                 decoration: const InputDecoration(
@@ -131,7 +139,7 @@ class _ReservationPageState extends State<ReservationPage> {
                 validator: (v) => v!.isEmpty ? "Champ obligatoire" : null,
                 onSaved: (v) => email = v,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
 
               TextFormField(
                 decoration: const InputDecoration(
@@ -142,7 +150,7 @@ class _ReservationPageState extends State<ReservationPage> {
                 validator: (v) => v!.isEmpty ? "Champ obligatoire" : null,
                 onSaved: (v) => phone = v,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
 
               ListTile(
                 title: const Text("Date"),
@@ -173,7 +181,7 @@ class _ReservationPageState extends State<ReservationPage> {
                 onTap: () => _pickTime(context, false),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
 
               TextFormField(
                 decoration: const InputDecoration(
@@ -186,14 +194,14 @@ class _ReservationPageState extends State<ReservationPage> {
                 onSaved: (v) => participants = int.parse(v!),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
 
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _submitForm,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.orange,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Text(

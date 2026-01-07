@@ -95,7 +95,7 @@ class _SignUpState extends State<SignUp> {
                   signUp(context, email, password);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
+                  backgroundColor: Colors.orange,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: const StadiumBorder(),
                 ),
@@ -104,10 +104,6 @@ class _SignUpState extends State<SignUp> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-
-              const Center(child: Text("OR")),
-
-              _buildGoogleButton(),
 
               _buildLoginRedirect(context),
             ],
@@ -176,25 +172,6 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Widget _buildGoogleButton() {
-    return Container(
-      height: 45,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.purple),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Center(
-        child: Image.asset(
-          'assets/google.png',
-          height: 25,
-          errorBuilder:
-              (context, error, stackTrace) =>
-                  const Icon(Icons.g_mobiledata, size: 30),
-        ),
-      ),
-    );
-  }
-
   Widget _buildLoginRedirect(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -202,7 +179,10 @@ class _SignUpState extends State<SignUp> {
         const Text("Already have an account? "),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("Sign In", style: TextStyle(color: Colors.purple)),
+          child: const Text(
+            "Sign In",
+            style: TextStyle(color: Colors.deepPurple),
+          ),
         ),
       ],
     );

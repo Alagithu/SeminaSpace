@@ -2,12 +2,10 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/chatPage.dart';
 import 'package:flutter_application_1/firebase_options.dart';
 import 'package:flutter_application_1/homePage.dart';
 import 'package:flutter_application_1/login.dart';
 import 'package:flutter_application_1/profilePage.dart';
-import 'package:flutter_application_1/searchPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,12 +38,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int _currentPage = 0;
 
-  final List<Widget> _pages = [
-    HomePage(),
-    SearchPage(),
-    ChatPage(),
-    ProfilePage(),
-  ];
+  final List<Widget> _pages = [HomePage(), ProfilePage()];
 
   late final AnimationController _controller;
   late final Animation<double> _fadeAnimation;
@@ -103,7 +96,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.purple, Colors.purpleAccent],
+              colors: [Colors.orange, Colors.purpleAccent],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -123,14 +116,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             child: Icon(Icons.home_outlined, color: Colors.purple),
             label: "Home",
           ),
-          CurvedNavigationBarItem(
-            child: Icon(Icons.search, color: Colors.purple),
-            label: "Search",
-          ),
-          CurvedNavigationBarItem(
-            child: Icon(Icons.message, color: Colors.purple),
-            label: "Chat",
-          ),
+
           CurvedNavigationBarItem(
             child: Icon(Icons.perm_identity, color: Colors.purple),
             label: "Profile",
